@@ -6,7 +6,7 @@
 (or (server-running-p)
     (server-start))
 
-; -- Window Size --
+; -- Window Settings --
 
 (defun set-frame-size-according-to-resolution ()
   (interactive)
@@ -27,6 +27,8 @@
                              (frame-char-height)))))))
 
 (set-frame-size-according-to-resolution)
+
+(scroll-bar-mode -1)
 
 ; -- Package Manager --
 
