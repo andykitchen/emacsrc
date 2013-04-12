@@ -63,6 +63,10 @@
 
 (load "nrepl-custom.el")
 
+(load "mathematica.el")
+(setq mathematica-command-line "/Applications/Mathematica.app/Contents/MacOS/MathKernel")
+(setq mathematica-never-start-kernel-with-mode t)
+
 (toggle-word-wrap)
 (global-auto-revert-mode)
 
