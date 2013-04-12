@@ -70,6 +70,8 @@
 (toggle-word-wrap)
 (global-auto-revert-mode)
 
+(setq-default vc-follow-symlinks t)
+
 (add-to-list 'hs-special-modes-alist
 	     '(ruby-mode
 	       "\\(def\\|do\\|{\\)" "\\(end\\|end\\|}\\)" "#"
