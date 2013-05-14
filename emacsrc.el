@@ -35,6 +35,8 @@
 (require 'package)
 (add-to-list 'package-archives
 	     '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives
+             '("melpa" . "http://melpa.milkbox.net/packages/"))
 
 (package-initialize)
 
@@ -52,7 +54,7 @@
     scala-mode
     haml-mode
     slim-mode
-    expand-region))
+    expand-region)) 
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -66,6 +68,9 @@
 (load "mathematica.el")
 (setq mathematica-command-line "/Applications/Mathematica.app/Contents/MacOS/MathKernel")
 (setq mathematica-never-start-kernel-with-mode t)
+
+;(require 'slime)
+;(slime-setup '(slime-repl))
 
 (toggle-word-wrap)
 (global-auto-revert-mode)
@@ -82,7 +87,6 @@
         "hideshow-expand affected block when using goto-line in a collapsed buffer"
         (save-excursion
            (hs-show-block)))
-
 
 ; -- Functions --
 
@@ -101,6 +105,7 @@
 
 (progn
   (global-set-key (kbd "s-/") 'comment-or-uncomment-region)
+  (global-set-key (kbd "s-;") 'comment-or-uncomment-region)
   (global-set-key (kbd "s-{") 'previous-multiframe-window)
   (global-set-key (kbd "s-}") 'next-multiframe-window)
   (global-set-key (kbd "s-[") 'previous-multiframe-window)
@@ -115,7 +120,9 @@
   (global-set-key (kbd "<insert>")     nil)
   (global-set-key (kbd "<insertchar>") nil)
 
-  (global-set-key (kbd "C-=") 'er/expand-region))
+  (global-set-key (kbd "C-=") 'er/expand-region)
+
+  (global-set-key (kbd "s-s") 'save-buffer))
 
 (eval-after-load "projectile"
   '(progn
@@ -126,12 +133,12 @@
   '(progn
      (define-key clojure-mode-map (kbd "s-<return>")
        'nrepl-eval-expression-at-point)
-     (define-key clojure-mode-map (kbd "s-e")
+     (define-key clojure-mode-map (kbd "s-r")
        'nrepl-save-and-load-current-buffer)
      (define-key clojure-mode-map (kbd "{") 'paredit-open-curly)
      (define-key clojure-mode-map (kbd "}") 'paredit-close-curly)
      ; (define-key clojure-mode-map (kbd "s-y") 'nrepl-run-tests)
-     (define-key clojure-mode-map (kbd "s-r") 'nrepl-run-again)))
+     (define-key clojure-mode-map (kbd "s-R") 'nrepl-run-again)))
 
 (eval-after-load "hideshow"
   '(progn
@@ -144,8 +151,11 @@
 ; -- Hooks --
 
 (require 'highlight-sexps)
-(add-hook 'clojure-mode-hook 'paredit-mode)
 (add-hook 'clojure-mode-hook 'highlight-sexps-mode)
+
+(add-hook 'clojure-mode-hook    'paredit-mode)
+(add-hook 'nrepl-mode-hook      'paredit-mode)
+(add-hook 'emacs-lisp-mode-hook 'paredit-mode)
 
 (add-hook 'c-mode-common-hook
   (lambda ()
@@ -172,7 +182,7 @@
   (if (> (buffer-size) 2048)
       (hs-hide-all)))
 
-(add-hook 'clojure-mode-hook  'fold-if-long-file)
+;(add-hook 'clojure-mode-hook  'fold-if-long-file)
 
 ; -- Auto-Mode Setup --
 
@@ -180,7 +190,8 @@
 (add-to-list 'auto-mode-alist '("\\.rake$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("/Gemfile$" . ruby-mode))
 (add-to-list 'auto-mode-alist '("/mutt-.*-.*$" . mail-mode))
-
+(add-to-list 'auto-mode-alist '("\\.scala\\'" . scala-mode))
+(add-to-list 'auto-mode-alist '("\\.sbt\\'" . scala-mode))
 
 
 ; -- Customizations --
@@ -195,10 +206,11 @@
  '(auto-save-list-file-prefix "~/.emacs-backup.auto-saves-")
  '(backup-by-copying t)
  '(backup-directory-alist (quote (("." . "~/.emacs-backup"))))
- '(clojure-defun-indents (quote (GET POST DELETE context add-encoder select subselect)))
+ '(clojure-defun-indents (quote (GET POST DELETE context add-encoder select subselect fact facts)))
  '(custom-enabled-themes (quote (wombat-mod)))
  '(custom-safe-themes (quote ("60a0eafa8dc70f464d574c2630ef712d832679f10095a87bae37166200ad0f76" default)))
  '(dired-use-ls-dired nil)
+ '(haskell-mode-hook (quote (turn-on-haskell-indentation)))
  '(hl-sexp-background-colors (quote ("#353535")))
  '(ido-enable-flex-matching t)
  '(ido-everywhere t)
@@ -209,6 +221,7 @@
  '(nrepl-host "localhost")
  '(nrepl-popup-stacktraces nil)
  '(nrepl-port "7888")
+ '(nrepl-server-command "/usr/local/bin/lein repl :headless")
  '(project-mode t)
  '(project-search-exclusion-regexes-default (quote ("[\\\\/]SCCS[\\\\/]" "[\\\\/]RCS[\\\\/]" "[\\\\/]CVS[\\\\/]" "[\\\\/]MCVS[\\\\/]" "[\\\\/]\\.svn[\\\\/]" "[\\\\/]\\.git[\\\\/]" "[\\\\/]\\.hg[\\\\/]" "[\\\\/]\\.bzr[\\\\/]" "[\\\\/]_MTN[\\\\/]" "[\\\\/]_darcs[\\\\/]" "[\\\\/].#" "\\.o$" "~$" "\\.bin$" "\\.lbin$" "\\.so$" "\\.a$" "\\.ln$" "\\.blg$" "\\.bbl$" "\\.elc$" "\\.lof$" "\\.glo$" "\\.idx$" "\\.lot$" "\\.fmt$" "\\.tfm$" "\\.class$" "\\.fas$" "\\.lib$" "\\.mem$" "\\.x86f$" "\\.sparcf$" "\\.fasl$" "\\.ufsl$" "\\.fsl$" "\\.dxl$" "\\.pfsl$" "\\.dfsl$" "\\.p64fsl$" "\\.d64fsl$" "\\.dx64fsl$" "\\.lo$" "\\.la$" "\\.gmo$" "\\.mo$" "\\.toc$" "\\.aux$" "\\.cp$" "\\.fn$" "\\.ky$" "\\.pg$" "\\.tp$" "\\.vr$" "\\.cps$" "\\.fns$" "\\.kys$" "\\.pgs$" "\\.tps$" "\\.vrs$" "\\.pyc$" "\\.pyo$" "\\.jar$" "\\.class$" "\\.exe$" "\\.png$" "\\.gif$" "\\.jpg$" "\\.jpeg$" "\\.ico$" "\\.rtf$" "\\.tar$" "\\.tgz$" "\\.gz$" "\\.bz2$" "\\.zip$" "\\.rar$" "\\.cab$" "\\.dll$" "\\.pdf$" "\\.tmp$" "\\.log$" "\\.msi$" "\\.war$" "\\bTAGS$" "\\.hi$" "\\.DS_Store$")))
  '(projectile-global-mode t)

@@ -39,14 +39,9 @@
      (lambda (buffer err)
        (message "%s" err))
      (lambda (buffer)
-       (with-current-buffer (get-buffer nrepl-nrepl-buffer)
+       (with-current-buffer (get-buffer "*nrepl*")
          (nrepl-replace-input (car nrepl-input-history))
          (nrepl-send-input t))))))
-
-(defun run-again-nrepl-load-file-op (filename)
-  (run-again-nrepl-send-load-file (nrepl-file-string filename)
-                               filename
-                               (file-name-nondirectory filename)))
 
 (defun run-again-nrepl-send-load-file (file-contents file-path file-name)
   (let ((buffer (current-buffer)))
@@ -56,6 +51,11 @@
                               "file-path" file-path
                               "file-name" file-name)
                         (run-again-nrepl-load-file-handler buffer))))
+
+(defun run-again-nrepl-load-file-op (filename)
+  (run-again-nrepl-send-load-file (nrepl-file-string filename)
+                               filename
+                               (file-name-nondirectory filename)))
 
 (defun nrepl-run-again ()
   (interactive)
