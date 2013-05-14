@@ -15,6 +15,20 @@
 
 (make-variable-buffer-local 'nrepl-test-namespaces)
 
+(defun my-nrepl-err-handler (buffer ex root-ex session)
+  (with-current-buffer buffer
+    (nrepl-send-string 
+     "(if-let [pst+ (clojure.core/resolve 'clj-stacktrace.repl/pst+)]
+                      (pst+ *e) (clojure.stacktrace/print-stack-trace *e))"
+     (nrepl-make-response-handler
+      (nrepl-make-popup-buffer nrepl-error-buffer)
+      nil
+      'nrepl-emit-into-color-buffer nil nil) nil session)))
+
+(eval-after-load "nrepl"
+  '(progn
+     (setq-default nrepl-err-handler 'my-nrepl-err-handler)))
+
 ;; TODO Fixme
 (defun nrepl-run-tests ()
   (interactive)

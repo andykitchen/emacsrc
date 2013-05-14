@@ -23,7 +23,7 @@
     ;; whatnot), then divide by the height of a char to
     ;; get the height we want
     (add-to-list 'default-frame-alist 
-         (cons 'height (/ (- (x-display-pixel-height) 100)
+         (cons 'height (/ (- (x-display-pixel-height) 200)
                              (frame-char-height)))))))
 
 (set-frame-size-according-to-resolution)
@@ -219,7 +219,7 @@
  '(indent-tabs-mode nil)
  '(js-indent-level 2)
  '(nrepl-host "localhost")
- '(nrepl-popup-stacktraces nil)
+ '(nrepl-popup-stacktraces t)
  '(nrepl-port "7888")
  '(nrepl-server-command "/usr/local/bin/lein repl :headless")
  '(project-mode t)
