@@ -46,7 +46,7 @@
 (defvar my-packages
   '(ido 
     paredit
-    nrepl
+    cider
     projectile
     clojure-mode
     haskell-mode
@@ -63,7 +63,7 @@
 
 ; -- Misc --
 
-(load "nrepl-custom.el")
+(load "cider-custom.el")
 
 (load "mathematica.el")
 (setq mathematica-command-line "/Applications/Mathematica.app/Contents/MacOS/MathKernel")
@@ -87,6 +87,7 @@
         "hideshow-expand affected block when using goto-line in a collapsed buffer"
         (save-excursion
            (hs-show-block)))
+
 
 ; -- Functions --
 
@@ -132,13 +133,11 @@
 (eval-after-load "clojure-mode"
   '(progn
      (define-key clojure-mode-map (kbd "s-<return>")
-       'nrepl-eval-expression-at-point)
+       'cider-eval-last-sexp)
      (define-key clojure-mode-map (kbd "s-r")
-       'nrepl-save-and-load-current-buffer)
-     (define-key clojure-mode-map (kbd "{") 'paredit-open-curly)
-     (define-key clojure-mode-map (kbd "}") 'paredit-close-curly)
-     ; (define-key clojure-mode-map (kbd "s-y") 'nrepl-run-tests)
-     (define-key clojure-mode-map (kbd "s-R") 'nrepl-run-again)))
+       'cider-load-current-buffer)
+     (define-key clojure-mode-map (kbd "s-R")
+       'cider-load-and-eval-again-in-repl)))
 
 (eval-after-load "hideshow"
   '(progn
@@ -154,7 +153,7 @@
 (add-hook 'clojure-mode-hook 'highlight-sexps-mode)
 
 (add-hook 'clojure-mode-hook    'paredit-mode)
-(add-hook 'nrepl-mode-hook      'paredit-mode)
+(add-hook 'cider-repl-mode-hook 'paredit-mode)
 (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
 
 (add-hook 'c-mode-common-hook
@@ -206,6 +205,9 @@
  '(auto-save-list-file-prefix "~/.emacs-backup.auto-saves-")
  '(backup-by-copying t)
  '(backup-directory-alist (quote (("." . "~/.emacs-backup"))))
+ '(cider-popup-on-error nil)
+ '(cider-popup-stacktraces nil)
+ '(cider-prompt-save-file-on-load nil)
  '(clojure-defun-indents (quote (GET POST DELETE context add-encoder select subselect fact facts)))
  '(custom-enabled-themes (quote (wombat-mod)))
  '(custom-safe-themes (quote ("60a0eafa8dc70f464d574c2630ef712d832679f10095a87bae37166200ad0f76" default)))
@@ -218,14 +220,13 @@
  '(ido-mode (quote both) nil (ido))
  '(indent-tabs-mode nil)
  '(js-indent-level 2)
+ '(nrepl-connected-hook (quote (cider-enable-on-existing-clojure-buffers cider-display-connected-message)))
+ '(nrepl-disconnected-hook (quote (cider-possibly-disable-on-existing-clojure-buffers)))
  '(nrepl-host "localhost")
- '(nrepl-popup-stacktraces t)
- '(nrepl-port "7888")
- '(nrepl-server-command "/usr/local/bin/lein repl :headless")
+ '(nrepl-port 7888)
  '(project-mode t)
  '(project-search-exclusion-regexes-default (quote ("[\\\\/]SCCS[\\\\/]" "[\\\\/]RCS[\\\\/]" "[\\\\/]CVS[\\\\/]" "[\\\\/]MCVS[\\\\/]" "[\\\\/]\\.svn[\\\\/]" "[\\\\/]\\.git[\\\\/]" "[\\\\/]\\.hg[\\\\/]" "[\\\\/]\\.bzr[\\\\/]" "[\\\\/]_MTN[\\\\/]" "[\\\\/]_darcs[\\\\/]" "[\\\\/].#" "\\.o$" "~$" "\\.bin$" "\\.lbin$" "\\.so$" "\\.a$" "\\.ln$" "\\.blg$" "\\.bbl$" "\\.elc$" "\\.lof$" "\\.glo$" "\\.idx$" "\\.lot$" "\\.fmt$" "\\.tfm$" "\\.class$" "\\.fas$" "\\.lib$" "\\.mem$" "\\.x86f$" "\\.sparcf$" "\\.fasl$" "\\.ufsl$" "\\.fsl$" "\\.dxl$" "\\.pfsl$" "\\.dfsl$" "\\.p64fsl$" "\\.d64fsl$" "\\.dx64fsl$" "\\.lo$" "\\.la$" "\\.gmo$" "\\.mo$" "\\.toc$" "\\.aux$" "\\.cp$" "\\.fn$" "\\.ky$" "\\.pg$" "\\.tp$" "\\.vr$" "\\.cps$" "\\.fns$" "\\.kys$" "\\.pgs$" "\\.tps$" "\\.vrs$" "\\.pyc$" "\\.pyo$" "\\.jar$" "\\.class$" "\\.exe$" "\\.png$" "\\.gif$" "\\.jpg$" "\\.jpeg$" "\\.ico$" "\\.rtf$" "\\.tar$" "\\.tgz$" "\\.gz$" "\\.bz2$" "\\.zip$" "\\.rar$" "\\.cab$" "\\.dll$" "\\.pdf$" "\\.tmp$" "\\.log$" "\\.msi$" "\\.war$" "\\bTAGS$" "\\.hi$" "\\.DS_Store$")))
  '(projectile-global-mode t)
- '(safe-local-variable-values (quote ((nrepl-test-namespaces . "'cardgasm.test.handler") (nrepl-test-namespaces . "'cardgasm.test.game"))))
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
