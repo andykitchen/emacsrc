@@ -22,7 +22,7 @@
     ;; from the screen height (for panels, menubars and
     ;; whatnot), then divide by the height of a char to
     ;; get the height we want
-    (add-to-list 'default-frame-alist 
+    (add-to-list 'default-frame-alist
          (cons 'height (/ (- (x-display-pixel-height) 200)
                              (frame-char-height)))))))
 
@@ -44,7 +44,7 @@
   (package-refresh-contents))
 
 (defvar my-packages
-  '(ido 
+  '(ido
     paredit
     cider
     projectile
@@ -54,7 +54,7 @@
     scala-mode
     haml-mode
     slim-mode
-    expand-region)) 
+    expand-region))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
