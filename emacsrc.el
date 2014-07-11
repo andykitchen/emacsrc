@@ -135,8 +135,6 @@
   (global-set-key (kbd "s-b") 'ido-switch-buffer)
   (global-set-key (kbd "s-k") 'kill-current-buffer)
 
-  (global-set-key (kbd "C-M-<backspace>") 'backward-kill-sexp)
-
   (global-set-key (kbd "C-z")          nil)
   (global-set-key (kbd "<insert>")     nil)
   (global-set-key (kbd "<insertchar>") nil)
@@ -166,6 +164,14 @@
      (define-key hs-minor-mode-map (kbd "s-3") 'hs-hide-all)
      (define-key hs-minor-mode-map (kbd "s-4") 'hs-show-all)))
 
+(eval-after-load "paredit"
+  '(progn
+     (define-key paredit-mode-map (kbd "C-M-<backspace>") 'backward-kill-sexp)))
+
+(add-hook 'c-mode-common-hook
+  (lambda ()
+    (local-set-key (kbd "C-c o") 'ff-find-other-file)))
+
 
 ; -- Hooks --
 
@@ -176,12 +182,8 @@
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
 (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
 
-(add-hook 'c-mode-common-hook
-  (lambda ()
-    (setq indent-tabs-mode t)
-    (local-set-key (kbd "C-c o") 'ff-find-other-file)))
-
-(add-hook 'go-mode-hook (lambda () (setq indent-tabs-mode t)))
+(add-hook 'c-mode-common-hook (lambda () (setq indent-tabs-mode t)))
+(add-hook 'go-mode-hook       (lambda () (setq indent-tabs-mode t)))
 
 (defun delete-trailing-whitespace-on-save ()
   (add-hook 'local-write-file-hooks
