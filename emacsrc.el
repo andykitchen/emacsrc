@@ -228,7 +228,7 @@
  '(cider-popup-on-error nil)
  '(cider-popup-stacktraces nil)
  '(cider-prompt-save-file-on-load nil)
- '(clojure-defun-indents (quote (GET POST DELETE context add-encoder select subselect fact facts)))
+ '(clojure-defun-indents (quote (GET POST DELETE this-as)))
  '(custom-enabled-themes (quote (wombat-mod)))
  '(custom-safe-themes (quote ("60a0eafa8dc70f464d574c2630ef712d832679f10095a87bae37166200ad0f76" default)))
  '(dired-use-ls-dired nil)
