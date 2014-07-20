@@ -116,6 +116,18 @@
      (setq mathematica-never-start-kernel-with-mode t)))
 
 
+; -- Package: Extempore --
+
+(autoload 'extempore-mode "extempore" "Extempore major mode" t)
+(add-to-list 'auto-mode-alist '("\\.xtm$" . extempore-mode))
+
+(eval-after-load "extempore"
+  '(progn
+     (define-key extempore-mode-map (kbd "s-<return>") 'extempore-send-definition)))
+
+(add-to-list 'auto-mode-alist '("\\.xtm\\'" . extempore-mode))
+
+
 ; -- Package: Highlight-Sexps
 
 (require 'highlight-sexps)
