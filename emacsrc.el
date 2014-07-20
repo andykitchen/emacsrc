@@ -63,39 +63,13 @@
 
 ; -- Misc --
 
-(load "cider-custom.el")
-
-(load "mathematica.el")
-(setq mathematica-command-line "/Applications/Mathematica.app/Contents/MacOS/MathKernel")
-(setq mathematica-never-start-kernel-with-mode t)
-
-;(require 'slime)
-;(slime-setup '(slime-repl))
-
-(setq visible-bell t)
-;(setq ring-bell-function 'ignore)
-
-(defun custom-bell-function ()
-  (unless
-      (memq this-command
-            '(;isearch-abort
-              ;abort-recursive-edit
-              ;exit-minibuffer
-              ;keyboard-quit
-              mwheel-scroll
-              ;down up
-              ;next-line
-              ;previous-line
-              ;backward-char
-              ;forward-char
-              ))
-    (ding)))
-(setq ring-bell-function 'custom-bell-function)
-
 (toggle-word-wrap)
 (global-auto-revert-mode)
 
 (setq-default vc-follow-symlinks t)
+
+
+; -- Hide/Show --
 
 (add-to-list 'hs-special-modes-alist
 	     '(ruby-mode
@@ -107,6 +81,49 @@
         "hideshow-expand affected block when using goto-line in a collapsed buffer"
         (save-excursion
            (hs-show-block)))
+
+
+; -- Bell --
+
+(setq visible-bell t)
+;(setq ring-bell-function 'ignore)
+
+(defun custom-bell-function ()
+  (unless
+      (memq this-command
+            '(isearch-abort
+              abort-recursive-edit
+              exit-minibuffer
+              keyboard-quit
+              mwheel-scroll
+              down up
+              next-line
+              previous-line
+              backward-char
+              forward-char
+              ))
+    (ding)))
+(setq ring-bell-function 'custom-bell-function)
+
+
+; -- Package: Mathematica --
+
+(autoload 'mathematica-mode "mathematica" "Mathematica major mode" t)
+
+(eval-after-load "mathematica"
+  '(progn
+     (setq mathematica-command-line "/Applications/Mathematica.app/Contents/MacOS/MathKernel")
+     (setq mathematica-never-start-kernel-with-mode t)))
+
+
+; -- Package: Highlight-Sexps
+
+(require 'highlight-sexps)
+
+
+; -- Cider Customizations
+
+(eval-after-load "cider" '(load "cider-custom"))
 
 
 ; -- Functions --
@@ -175,7 +192,6 @@
 
 ; -- Hooks --
 
-(require 'highlight-sexps)
 (add-hook 'clojure-mode-hook 'highlight-sexps-mode)
 
 (add-hook 'clojure-mode-hook    'paredit-mode)
