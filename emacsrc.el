@@ -233,6 +233,12 @@
 
 ;(add-hook 'clojure-mode-hook  'fold-if-long-file)
 
+; -- Indent React.DOM calls correctly --
+
+(eval-after-load "clojure-mode"
+  '(dolist (sym '(div h1 ul li a i span))
+     (put-clojure-indent sym 'defun)))
+
 ; -- Auto-Mode Setup --
 
 (add-to-list 'auto-mode-alist '("/COMMIT_EDITMSG$" . diff-mode))
@@ -258,7 +264,8 @@
  '(cider-popup-on-error nil)
  '(cider-popup-stacktraces nil)
  '(cider-prompt-save-file-on-load nil)
- '(clojure-defun-indents (quote (GET POST DELETE this-as)))
+ '(cider-show-error-buffer nil)
+ '(clojure-defun-indents (quote (GET POST DELETE this-as describe it it* fn-props fn-props-state)))
  '(custom-enabled-themes (quote (wombat-mod)))
  '(custom-safe-themes (quote ("60a0eafa8dc70f464d574c2630ef712d832679f10095a87bae37166200ad0f76" default)))
  '(dired-use-ls-dired nil)
@@ -266,6 +273,7 @@
  '(hl-sexp-background-colors (quote ("#353535")))
  '(ido-enable-flex-matching t)
  '(ido-everywhere t)
+ '(ido-file-extensions-order (quote (".hs" ".clj" ".cljs" ".rb" ".c" ".txt" ".emacs" t)))
  '(ido-file-extensions-order (quote (".hs" ".clj" ".rb" ".c" ".js" ".txt" ".emacs")))
  '(ido-mode (quote both) nil (ido))
  '(indent-tabs-mode nil)
