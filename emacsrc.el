@@ -180,11 +180,21 @@
 (eval-after-load "clojure-mode"
   '(progn
      (define-key clojure-mode-map (kbd "s-<return>")
-       'cider-eval-last-sexp)
-     (define-key clojure-mode-map (kbd "s-r")
-       'cider-load-current-buffer)
-     (define-key clojure-mode-map (kbd "s-R")
-       'cider-load-and-eval-again-in-repl)))
+       'cider-eval-last-sexp)))
+
+;; (eval-after-load "cider-mode"
+;;   '(progn
+;;      (define-key cider-mode-map (kbd "s-r")
+;;        'cider-load-current-buffer)
+;;      (define-key cider-mode-map (kbd "s-R")
+;;        'cider-load-and-eval-again-in-repl)))
+
+(eval-after-load "cider-mode"
+  '(progn
+     (define-key cider-mode-map (kbd "s-r")
+       'cider-tools-namespace-refresh)
+     (define-key cider-mode-map (kbd "s-R")
+       'cider-tools-namespace-refresh-and-eval-again)))
 
 (eval-after-load "hideshow"
   '(progn
@@ -262,7 +272,6 @@
  '(backup-by-copying t)
  '(backup-directory-alist (quote (("." . "~/.emacs-backup"))))
  '(cider-popup-on-error nil)
- '(cider-popup-stacktraces nil)
  '(cider-prompt-save-file-on-load nil)
  '(cider-show-error-buffer nil)
  '(clojure-defun-indents (quote (GET POST DELETE this-as describe it it* fn-props fn-props-state)))
@@ -274,14 +283,11 @@
  '(ido-enable-flex-matching t)
  '(ido-everywhere t)
  '(ido-file-extensions-order (quote (".hs" ".clj" ".cljs" ".rb" ".c" ".txt" ".emacs" t)))
- '(ido-file-extensions-order (quote (".hs" ".clj" ".rb" ".c" ".js" ".txt" ".emacs")))
  '(ido-mode (quote both) nil (ido))
  '(indent-tabs-mode nil)
  '(js-indent-level 2)
  '(nrepl-connected-hook (quote (cider-enable-on-existing-clojure-buffers cider-display-connected-message)))
  '(nrepl-disconnected-hook (quote (cider-possibly-disable-on-existing-clojure-buffers)))
- '(nrepl-host "localhost")
- '(nrepl-port 7888)
  '(project-mode t)
  '(project-search-exclusion-regexes-default (quote ("[\\\\/]SCCS[\\\\/]" "[\\\\/]RCS[\\\\/]" "[\\\\/]CVS[\\\\/]" "[\\\\/]MCVS[\\\\/]" "[\\\\/]\\.svn[\\\\/]" "[\\\\/]\\.git[\\\\/]" "[\\\\/]\\.hg[\\\\/]" "[\\\\/]\\.bzr[\\\\/]" "[\\\\/]_MTN[\\\\/]" "[\\\\/]_darcs[\\\\/]" "[\\\\/].#" "\\.o$" "~$" "\\.bin$" "\\.lbin$" "\\.so$" "\\.a$" "\\.ln$" "\\.blg$" "\\.bbl$" "\\.elc$" "\\.lof$" "\\.glo$" "\\.idx$" "\\.lot$" "\\.fmt$" "\\.tfm$" "\\.class$" "\\.fas$" "\\.lib$" "\\.mem$" "\\.x86f$" "\\.sparcf$" "\\.fasl$" "\\.ufsl$" "\\.fsl$" "\\.dxl$" "\\.pfsl$" "\\.dfsl$" "\\.p64fsl$" "\\.d64fsl$" "\\.dx64fsl$" "\\.lo$" "\\.la$" "\\.gmo$" "\\.mo$" "\\.toc$" "\\.aux$" "\\.cp$" "\\.fn$" "\\.ky$" "\\.pg$" "\\.tp$" "\\.vr$" "\\.cps$" "\\.fns$" "\\.kys$" "\\.pgs$" "\\.tps$" "\\.vrs$" "\\.pyc$" "\\.pyo$" "\\.jar$" "\\.class$" "\\.exe$" "\\.png$" "\\.gif$" "\\.jpg$" "\\.jpeg$" "\\.ico$" "\\.rtf$" "\\.tar$" "\\.tgz$" "\\.gz$" "\\.bz2$" "\\.zip$" "\\.rar$" "\\.cab$" "\\.dll$" "\\.pdf$" "\\.tmp$" "\\.log$" "\\.msi$" "\\.war$" "\\bTAGS$" "\\.hi$" "\\.DS_Store$")))
  '(projectile-global-mode t)
