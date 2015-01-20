@@ -182,19 +182,19 @@
      (define-key clojure-mode-map (kbd "s-<return>")
        'cider-eval-last-sexp)))
 
-;; (eval-after-load "cider-mode"
-;;   '(progn
-;;      (define-key cider-mode-map (kbd "s-r")
-;;        'cider-load-current-buffer)
-;;      (define-key cider-mode-map (kbd "s-R")
-;;        'cider-load-and-eval-again-in-repl)))
-
 (eval-after-load "cider-mode"
   '(progn
      (define-key cider-mode-map (kbd "s-r")
-       'cider-tools-namespace-refresh)
+       'cider-load-current-buffer)
      (define-key cider-mode-map (kbd "s-R")
-       'cider-tools-namespace-refresh-and-eval-again)))
+       'cider-load-and-eval-again-in-repl)))
+
+;; (eval-after-load "cider-mode"
+;;   '(progn
+;;      (define-key cider-mode-map (kbd "s-r")
+;;        'cider-tools-namespace-refresh)
+;;      (define-key cider-mode-map (kbd "s-R")
+;;        'cider-tools-namespace-refresh-and-eval-again)))
 
 (eval-after-load "hideshow"
   '(progn
@@ -274,7 +274,7 @@
  '(cider-popup-on-error nil)
  '(cider-prompt-save-file-on-load nil)
  '(cider-show-error-buffer nil)
- '(clojure-defun-indents (quote (GET POST DELETE this-as describe it it* fn-props fn-props-state)))
+ '(clojure-defun-indents (quote (GET POST DELETE this-as describe it it* fn-props fn-props-state fact facts)))
  '(custom-enabled-themes (quote (wombat-mod)))
  '(custom-safe-themes (quote ("60a0eafa8dc70f464d574c2630ef712d832679f10095a87bae37166200ad0f76" default)))
  '(dired-use-ls-dired nil)
