@@ -15,7 +15,7 @@
 (defun cider-load-and-eval-again-in-repl ()
   (interactive)
   (add-hook 'cider-file-loaded-hook 'cider-eval-again-in-repl-remove-hook 't)
-  (cider-load-current-buffer))
+  (cider-load-buffer))
 
 (defun cider-refresh-eval-again-handler (&optional buffer)
   "Make an interactive eval handler for BUFFER."
@@ -40,20 +40,19 @@
                  #(clojure.tools.namespace.repl/refresh :after 'user/go))
          ret   (reset)]
        (if (instance? java.lang.Throwable ret)
-         (throw ret)))
+         (throw ret))
+       ret)
    ")
 
 (defun cider-tools-namespace-refresh ()
   (interactive)
   (save-buffer)
   (cider-interactive-eval
-   cider-reset-form
-   (point-min)))
+   cider-reset-form))
 
 (defun cider-tools-namespace-refresh-and-eval-again ()
   (interactive)
   (save-buffer)
   (cider-interactive-eval
    cider-reset-form
-   (point-min)
    (cider-refresh-eval-again-handler)))
