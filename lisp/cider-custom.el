@@ -29,8 +29,7 @@
                                  (cider-emit-interactive-eval-output out))
                                (lambda (buffer err)
                                  (cider-emit-interactive-eval-err-output err)
-                                 (cider-highlight-compilation-errors buffer err)
-                                 (cider-jump-to-error-maybe buffer err))
+                                 (cider-handle-compilation-errors err buffer))
                                '()))
 
 (defconst cider-reset-form
@@ -39,7 +38,7 @@
                  (ns-resolve user 'reset)
                  #(clojure.tools.namespace.repl/refresh :after 'user/go))
          ret   (reset)]
-       (if (instance? java.lang.Throwable ret)
+       (when (instance? java.lang.Throwable ret)
          (throw ret))
        ret)
    ")
