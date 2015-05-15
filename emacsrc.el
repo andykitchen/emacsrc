@@ -1,10 +1,16 @@
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
+; -- Path --
+
+(add-to-list 'exec-path (concat (getenv "HOME") "/bin"))
+
+
 ; -- Server --
 
 (require 'server)
 (or (server-running-p)
     (server-start))
+
 
 ; -- Window Settings --
 
@@ -30,6 +36,7 @@
 
 (scroll-bar-mode -1)
 
+
 ; -- Package Manager --
 
 (require 'package)
@@ -45,16 +52,23 @@
 
 (defvar my-packages
   '(ido
-    paredit
-    cider
+    helm
     projectile
+    helm-projectile
+    paredit
+    rainbow-delimiters
+    hippie-expand-slime
+    expand-region
+    slime
+    cider
+    geiser
     clojure-mode
     haskell-mode
     go-mode
-    scala-mode
-    haml-mode
-    slim-mode
-    expand-region))
+    ;scala-mode
+    ;haml-mode
+    ;slim-mode
+    ))
 
 (dolist (p my-packages)
   (when (not (package-installed-p p))
@@ -67,20 +81,6 @@
 (global-auto-revert-mode)
 
 (setq-default vc-follow-symlinks t)
-
-
-; -- Hide/Show --
-
-(add-to-list 'hs-special-modes-alist
-	     '(ruby-mode
-	       "\\(def\\|do\\|{\\)" "\\(end\\|end\\|}\\)" "#"
-	       (lambda (arg) (ruby-end-of-block)) nil))
-
-(defadvice goto-line (after expand-after-goto-line
-                                activate compile)
-        "hideshow-expand affected block when using goto-line in a collapsed buffer"
-        (save-excursion
-           (hs-show-block)))
 
 
 ; -- Bell --
@@ -106,6 +106,21 @@
 (setq ring-bell-function 'custom-bell-function)
 
 
+; -- Package: Hide/Show --
+
+(add-to-list 'hs-special-modes-alist
+	     '(ruby-mode
+	       "\\(def\\|do\\|{\\)" "\\(end\\|end\\|}\\)" "#"
+	       (lambda (arg) (ruby-end-of-block)) nil))
+
+(defadvice goto-line (after expand-after-goto-line
+                            activate
+                            compile)
+  "hideshow-expand affected block when using goto-line in a collapsed buffer"
+  (save-excursion
+    (hs-show-block)))
+
+
 ; -- Package: Mathematica --
 
 (autoload 'mathematica-mode "mathematica" "Mathematica major mode" t)
@@ -125,17 +140,61 @@
   '(progn
      (define-key extempore-mode-map (kbd "s-<return>") 'extempore-send-definition)))
 
-(add-to-list 'auto-mode-alist '("\\.xtm\\'" . extempore-mode))
-
 
 ; -- Package: Highlight-Sexps
 
 (require 'highlight-sexps)
 
+; -- Package: Hippie Expand
+
+; (global-set-key "\M- " 'hippie-expand)
+
+; -- Package: Helm
+
+(require 'helm)
+(require 'helm-config)
+
+(global-set-key (kbd "M-x") 'helm-M-x)
+(setq helm-M-x-fuzzy-match t)
+
+; (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+
+(global-set-key (kbd "C-x b") 'helm-mini)
+(setq helm-buffers-fuzzy-matching t
+      helm-recentf-fuzzy-match    t)
+
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+
+
+; -- SBCL
+
+(setq inferior-lisp-program "sbcl")
+
 
 ; -- Cider Customizations
 
 (eval-after-load "cider" '(load "cider-custom"))
+
+
+; -- Comint Mode Clear
+
+(defun comint-clear ()
+  (interactive)
+  (let ((comint-buffer-maximum-size 0))
+    (comint-truncate-buffer)))
+
+(eval-after-load "comint-mode"
+  '(progn
+     (define-key comint-mode-map (kbd "C-c M-o") 'comint-clear)))
+
+
+; -- Lisp
+
+(eval-after-load "lisp-mode"
+  '(progn
+     (define-key lisp-mode-map (kbd "s-<return>") 'slime-eval-last-expression)))
 
 
 ; -- Functions --
@@ -185,7 +244,7 @@
 (eval-after-load "cider-mode"
   '(progn
      (define-key cider-mode-map (kbd "s-r")
-       'cider-load-current-buffer)
+       'cider-load-buffer)
      (define-key cider-mode-map (kbd "s-R")
        'cider-load-and-eval-again-in-repl)))
 
@@ -207,6 +266,10 @@
   '(progn
      (define-key paredit-mode-map (kbd "C-M-<backspace>") 'backward-kill-sexp)))
 
+(eval-after-load "geiser"
+  '(progn
+     (define-key scheme-mode-map (kbd "s-<return>") 'geiser-eval-last-sexp)))
+
 (add-hook 'c-mode-common-hook
   (lambda ()
     (local-set-key (kbd "C-c o") 'ff-find-other-file)))
@@ -214,11 +277,19 @@
 
 ; -- Hooks --
 
-(add-hook 'clojure-mode-hook 'highlight-sexps-mode)
+(defun add-hooks-for-lisp (hook)
+  (add-hook hook 'paredit-mode)
+  (add-hook hook 'highlight-sexps-mode)
+  (add-hook hook 'rainbow-delimiters-mode)
+  (add-hook hook 'hs-minor-mode))
 
-(add-hook 'clojure-mode-hook    'paredit-mode)
+(add-hooks-for-lisp 'lisp-mode-hook)
+(add-hooks-for-lisp 'emacs-lisp-mode-hook)
+(add-hooks-for-lisp 'scheme-mode-hook)
+(add-hooks-for-lisp 'clojure-mode-hook)
+
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
-(add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+(add-hook 'geiser-repl-mode-hook 'paredit-mode)
 
 (add-hook 'c-mode-common-hook (lambda () (setq indent-tabs-mode t)))
 (add-hook 'go-mode-hook       (lambda () (setq indent-tabs-mode t)))
@@ -229,9 +300,10 @@
       (save-excursion
         (delete-trailing-whitespace)))))
 
+(add-hook 'lisp-mode-hook     'delete-trailing-whitespace-on-save)
 (add-hook 'ruby-mode-hook     'delete-trailing-whitespace-on-save)
 (add-hook 'js-mode-hook       'delete-trailing-whitespace-on-save)
-(add-hook 'clojure-mode-hook  'delete-trailing-whitespace-on-save)
+; (add-hook 'clojure-mode-hook  'delete-trailing-whitespace-on-save)
 (add-hook 'c-mode-common-hook 'delete-trailing-whitespace-on-save)
 
 (add-hook 'ruby-mode-hook     'hs-minor-mode)
@@ -266,30 +338,41 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
+ '(ansi-color-names-vector
+   ["#242424" "#e5786d" "#95e454" "#cae682" "#8ac6f2" "#333366" "#ccaa8f" "#f6f3e8"])
  '(auto-save-file-name-transforms (quote ((".*" "~/.emacs-backup" t))))
  '(auto-save-list-file-prefix "~/.emacs-backup.auto-saves-")
  '(backup-by-copying t)
  '(backup-directory-alist (quote (("." . "~/.emacs-backup"))))
  '(cider-popup-on-error nil)
  '(cider-prompt-save-file-on-load nil)
- '(cider-show-error-buffer nil)
- '(clojure-defun-indents (quote (GET POST DELETE this-as describe it it* fn-props fn-props-state fact facts)))
+ '(cider-repl-pop-to-buffer-on-connect nil)
+ '(cider-repl-use-clojure-font-lock t)
+ '(cider-show-error-buffer t)
+ '(clojure-defun-indents
+   (quote
+    (GET POST DELETE this-as describe it it* fn-props fn-props-state fact facts)))
  '(custom-enabled-themes (quote (wombat-mod)))
- '(custom-safe-themes (quote ("60a0eafa8dc70f464d574c2630ef712d832679f10095a87bae37166200ad0f76" default)))
+ '(custom-safe-themes
+   (quote
+    ("60a0eafa8dc70f464d574c2630ef712d832679f10095a87bae37166200ad0f76" default)))
  '(dired-use-ls-dired nil)
  '(haskell-mode-hook (quote (turn-on-haskell-indentation)))
+ '(helm-mode t)
  '(hl-sexp-background-colors (quote ("#353535")))
- '(ido-enable-flex-matching t)
- '(ido-everywhere t)
  '(ido-file-extensions-order (quote (".hs" ".clj" ".cljs" ".rb" ".c" ".txt" ".emacs" t)))
- '(ido-mode (quote both) nil (ido))
  '(indent-tabs-mode nil)
  '(js-indent-level 2)
- '(nrepl-connected-hook (quote (cider-enable-on-existing-clojure-buffers cider-display-connected-message)))
- '(nrepl-disconnected-hook (quote (cider-possibly-disable-on-existing-clojure-buffers)))
+ '(nrepl-connected-hook
+   (quote
+    (cider-enable-on-existing-clojure-buffers cider-display-connected-message)))
+ '(nrepl-disconnected-hook
+   (quote
+    (cider-possibly-disable-on-existing-clojure-buffers)))
  '(project-mode t)
- '(project-search-exclusion-regexes-default (quote ("[\\\\/]SCCS[\\\\/]" "[\\\\/]RCS[\\\\/]" "[\\\\/]CVS[\\\\/]" "[\\\\/]MCVS[\\\\/]" "[\\\\/]\\.svn[\\\\/]" "[\\\\/]\\.git[\\\\/]" "[\\\\/]\\.hg[\\\\/]" "[\\\\/]\\.bzr[\\\\/]" "[\\\\/]_MTN[\\\\/]" "[\\\\/]_darcs[\\\\/]" "[\\\\/].#" "\\.o$" "~$" "\\.bin$" "\\.lbin$" "\\.so$" "\\.a$" "\\.ln$" "\\.blg$" "\\.bbl$" "\\.elc$" "\\.lof$" "\\.glo$" "\\.idx$" "\\.lot$" "\\.fmt$" "\\.tfm$" "\\.class$" "\\.fas$" "\\.lib$" "\\.mem$" "\\.x86f$" "\\.sparcf$" "\\.fasl$" "\\.ufsl$" "\\.fsl$" "\\.dxl$" "\\.pfsl$" "\\.dfsl$" "\\.p64fsl$" "\\.d64fsl$" "\\.dx64fsl$" "\\.lo$" "\\.la$" "\\.gmo$" "\\.mo$" "\\.toc$" "\\.aux$" "\\.cp$" "\\.fn$" "\\.ky$" "\\.pg$" "\\.tp$" "\\.vr$" "\\.cps$" "\\.fns$" "\\.kys$" "\\.pgs$" "\\.tps$" "\\.vrs$" "\\.pyc$" "\\.pyo$" "\\.jar$" "\\.class$" "\\.exe$" "\\.png$" "\\.gif$" "\\.jpg$" "\\.jpeg$" "\\.ico$" "\\.rtf$" "\\.tar$" "\\.tgz$" "\\.gz$" "\\.bz2$" "\\.zip$" "\\.rar$" "\\.cab$" "\\.dll$" "\\.pdf$" "\\.tmp$" "\\.log$" "\\.msi$" "\\.war$" "\\bTAGS$" "\\.hi$" "\\.DS_Store$")))
+ '(project-search-exclusion-regexes-default
+   (quote
+    ("[\\\\/]SCCS[\\\\/]" "[\\\\/]RCS[\\\\/]" "[\\\\/]CVS[\\\\/]" "[\\\\/]MCVS[\\\\/]" "[\\\\/]\\.svn[\\\\/]" "[\\\\/]\\.git[\\\\/]" "[\\\\/]\\.hg[\\\\/]" "[\\\\/]\\.bzr[\\\\/]" "[\\\\/]_MTN[\\\\/]" "[\\\\/]_darcs[\\\\/]" "[\\\\/].#" "\\.o$" "~$" "\\.bin$" "\\.lbin$" "\\.so$" "\\.a$" "\\.ln$" "\\.blg$" "\\.bbl$" "\\.elc$" "\\.lof$" "\\.glo$" "\\.idx$" "\\.lot$" "\\.fmt$" "\\.tfm$" "\\.class$" "\\.fas$" "\\.lib$" "\\.mem$" "\\.x86f$" "\\.sparcf$" "\\.fasl$" "\\.ufsl$" "\\.fsl$" "\\.dxl$" "\\.pfsl$" "\\.dfsl$" "\\.p64fsl$" "\\.d64fsl$" "\\.dx64fsl$" "\\.lo$" "\\.la$" "\\.gmo$" "\\.mo$" "\\.toc$" "\\.aux$" "\\.cp$" "\\.fn$" "\\.ky$" "\\.pg$" "\\.tp$" "\\.vr$" "\\.cps$" "\\.fns$" "\\.kys$" "\\.pgs$" "\\.tps$" "\\.vrs$" "\\.pyc$" "\\.pyo$" "\\.jar$" "\\.class$" "\\.exe$" "\\.png$" "\\.gif$" "\\.jpg$" "\\.jpeg$" "\\.ico$" "\\.rtf$" "\\.tar$" "\\.tgz$" "\\.gz$" "\\.bz2$" "\\.zip$" "\\.rar$" "\\.cab$" "\\.dll$" "\\.pdf$" "\\.tmp$" "\\.log$" "\\.msi$" "\\.war$" "\\bTAGS$" "\\.hi$" "\\.DS_Store$")))
  '(projectile-global-mode t)
  '(tool-bar-mode nil))
 (custom-set-faces
